@@ -1,0 +1,22 @@
+# Xcode 构建产物
+build/
+*.pbxuser
+*.mode1v3
+*.mode1v3
+*.perspectivev3
+*.xcuserdatad
+
+# Swift Package Manager
+.build/
+# Packages/
+
+# CocoaPods
+Pods/
+.cocoapods.lock
+# Podfile.lock
+
+# 其他
+*.swiftdoc
+*.xcodeproj
+*.xcworkspace
+.DS_Store
