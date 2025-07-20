@@ -48,6 +48,8 @@ struct ContentView: View {
             }
             .sheet(isPresented: $showingAddNote) {
                 AddNoteModal(viewModel: viewModel)
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
             }
         }
     }

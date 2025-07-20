@@ -16,6 +16,7 @@ struct AddNoteModal: View {
                         .font(.body)
                         .frame(minHeight: 120)
                         .focused($isTextFieldFocused)
+                        .keyboardType(.default)
                 }
                 
                 Section("标签") {
@@ -35,6 +36,11 @@ struct AddNoteModal: View {
             }
             .navigationTitle("新建笔记")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                DispatchQueue.main.async {
+                    isTextFieldFocused = true
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("取消") {
