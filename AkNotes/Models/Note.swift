@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 enum NoteTag: String, CaseIterable, Codable {
     case todo = "todo"
@@ -15,12 +16,12 @@ enum NoteTag: String, CaseIterable, Codable {
         }
     }
     
-    var colorName: String {
+    var color: Color {
         switch self {
-        case .todo: return "orange"
-        case .idea: return "blue"
-        case .tools: return "green"
-        case .general: return "gray"
+        case .todo: return .orange
+        case .idea: return .blue
+        case .tools: return .green
+        case .general: return .gray
         }
     }
 }

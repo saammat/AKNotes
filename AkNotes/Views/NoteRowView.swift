@@ -8,7 +8,7 @@ struct NoteRowView: View {
         HStack(alignment: .top, spacing: 12) {
             // Tag indicator
             Circle()
-                .fill(Color(note.tag.colorName))
+                .fill(note.tag.color)
                 .frame(width: 12, height: 12)
                 .padding(.top, 4)
             
