@@ -45,6 +45,13 @@ struct AppColors {
     static let background = Color(.systemBackground)
     static let secondaryBackground = Color(.secondarySystemBackground)
     static let tertiaryBackground = Color(.tertiarySystemBackground)
+
+    // Subtle gradient for app backgrounds
+    static let appBackgroundGradient = LinearGradient(
+        gradient: Gradient(colors: [Color(hex: "F0F4FF"), Color(hex: "D9E4FF")]),
+        startPoint: .top,
+        endPoint: .bottom
+    )
     
     // Glassmorphic Colors
     static let glassBackground = Color.white.opacity(0.1)
@@ -60,7 +67,9 @@ struct AppColors {
 struct AppTypography {
     static let largeTitle = Font.system(.largeTitle, design: .rounded, weight: .bold)
     static let title = Font.system(.title, design: .rounded, weight: .semibold)
+    static let title3 = Font.system(.title3, design: .rounded, weight: .semibold)
     static let headline = Font.system(.headline, design: .rounded, weight: .semibold)
+    static let subheadline = Font.system(.subheadline, design: .rounded)
     static let body = Font.system(.body, design: .rounded)
     static let callout = Font.system(.callout, design: .rounded)
     static let caption = Font.system(.caption, design: .rounded, weight: .medium)

@@ -27,7 +27,7 @@ struct ContentView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Text("AkNotes")
-                        .font(.system(.title3, weight: .bold))
+                        .font(AppTypography.title3)
                         .foregroundColor(.primary)
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -53,7 +53,7 @@ struct ContentView: View {
     }
     
     private var backgroundGradient: some View {
-        Color(.secondarySystemBackground)
+        AppColors.appBackgroundGradient
             .ignoresSafeArea()
     }
     
@@ -215,6 +215,7 @@ struct SettingsView: View {
                     .foregroundColor(.red)
                 }
             }
+            .listStyle(.insetGrouped)
             .navigationTitle("设置")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
