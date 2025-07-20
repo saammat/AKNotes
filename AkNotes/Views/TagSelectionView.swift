@@ -33,7 +33,7 @@ struct TagButton: View {
                 .padding(.vertical, 8)
                 .background(
                     Capsule()
-                        .fill(isSelected ? Color(tag.colorName) : Color.gray.opacity(0.2))
+                        .fill(isSelected ? tag.color : Color.gray.opacity(0.2))
                 )
         }
     }
