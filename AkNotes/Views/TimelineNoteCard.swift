@@ -37,6 +37,10 @@ struct TimelineNoteCard: View {
         .background(Color(.systemBackground))
         .cornerRadius(10)
         .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(iOSDesignSystem.Colors.brandBlue.opacity(0.1), lineWidth: 1)
+        )
         .contextMenu {
             Button(role: .destructive) {
                 onDelete(note)

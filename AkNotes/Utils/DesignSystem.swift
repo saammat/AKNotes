@@ -41,6 +41,12 @@ struct AppColors {
         endPoint: .bottomTrailing
     )
     
+    static let allGradient = LinearGradient(
+        colors: [Color(hex: "D9E4FF"), Color(hex: "2d5be1")],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+    
     // Background Colors
     static let background = Color(.systemBackground)
     static let secondaryBackground = Color(.secondarySystemBackground)

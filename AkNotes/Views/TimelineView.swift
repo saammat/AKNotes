@@ -77,7 +77,7 @@ struct TimelineHeader: View {
     var body: some View {
         HStack {
             Text(formattedDate(dateString))
-                .font(AppTypography.headline)
+                .font(AppTypography.title3)
                 .foregroundColor(.primary)
             
             Spacer()
@@ -87,8 +87,8 @@ struct TimelineHeader: View {
                 .foregroundColor(.secondary)
         }
         .padding(.vertical, 12)
-        .padding(.horizontal, 16)
-        .background(Color(.secondarySystemBackground))
+        .padding(.horizontal, 44)
+            .background(iOSDesignSystem.Colors.brandBlueSuperLight)
     }
     
     private var dayOfWeek: String {
@@ -124,7 +124,7 @@ struct TimelineRow: View {
         HStack(alignment: .top, spacing: 0) {
             // Timeline dot (aligned with continuous background line)
             timelineIndicator
-                .padding(.leading, 14) // Align with background line position
+                .padding(.leading, 16) // Align with background line position
             
             // Note card
             noteCard
@@ -192,7 +192,7 @@ struct EmptyTimelineView: View {
                 Circle()
                     .fill(
                         LinearGradient(
-                            colors: [Color(hex: "667eea").opacity(0.2), Color(hex: "764ba2").opacity(0.2)],
+                            colors: [iOSDesignSystem.Colors.brandBlue.opacity(0.2), iOSDesignSystem.Colors.brandBlueLight.opacity(0.2)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -201,7 +201,7 @@ struct EmptyTimelineView: View {
                 
                 Image(systemName: "timeline.selection")
                     .font(.system(size: 40, weight: .semibold))
-                    .foregroundColor(Color(hex: "667eea"))
+                    .foregroundColor(iOSDesignSystem.Colors.brandBlue)
             }
             
             VStack(spacing: AppSpacing.sm) {

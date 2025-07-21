@@ -4,14 +4,28 @@ import SwiftUI
 struct iOSDesignSystem {
     // MARK: - Colors
     struct Colors {
-        // Use system colors for automatic dark mode support
-        static let background = Color(.systemBackground)
+        // Subtle gradient background colors - light gray to light blue
+        static let backgroundGradient = LinearGradient(
+            colors: [
+                Color(.systemGray6).opacity(0.8),
+                Color(.systemBlue).opacity(0.15)
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        
+        static let appBackground = Color(.systemGray6)
         static let secondaryBackground = Color(.secondarySystemBackground)
         static let tertiaryBackground = Color(.tertiarySystemBackground)
         
         static let primaryText = Color(.label)
         static let secondaryText = Color(.secondaryLabel)
         static let tertiaryText = Color(.tertiaryLabel)
+        
+        // Brand blue accent for interactive elements
+        static let brandBlue = Color(red: 0.2, green: 0.4, blue: 0.9)
+        static let brandBlueLight = Color(red: 0.3, green: 0.5, blue: 1.0)
+        static let brandBlueSuperLight = Color(red: 0.89, green: 0.93, blue: 0.99)
         
         // Tag colors using system colors
         static let todo = Color.systemRed
