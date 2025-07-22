@@ -40,7 +40,7 @@ struct TimelineView: View {
     private var timelineBackgroundLine: some View {
         GeometryReader { geometry in
             Rectangle()
-                .fill(Color(.separator))
+                .fill(iOSDesignSystem.Colors.accent200)
                 .frame(width: 1)
                 .frame(height: max(geometry.size.height, 100))
                 .position(x: 20, y: geometry.size.height / 2)
@@ -88,7 +88,6 @@ struct TimelineHeader: View {
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 44)
-            .background(iOSDesignSystem.Colors.brandBlueSuperLight)
     }
     
     private var dayOfWeek: String {
@@ -148,10 +147,10 @@ struct TimelineRow: View {
     
     private var tagColor: Color {
         switch note.tag {
-        case .todo: return .systemRed
-        case .idea: return .systemGreen
-        case .tools: return .systemBlue
-        case .general: return .systemGray
+        case .todo: return iOSDesignSystem.Colors.todo
+        case .idea: return iOSDesignSystem.Colors.idea
+        case .tools: return iOSDesignSystem.Colors.tools
+        case .general: return iOSDesignSystem.Colors.general
         }
     }
     
@@ -192,7 +191,7 @@ struct EmptyTimelineView: View {
                 Circle()
                     .fill(
                         LinearGradient(
-                            colors: [iOSDesignSystem.Colors.brandBlue.opacity(0.2), iOSDesignSystem.Colors.brandBlueLight.opacity(0.2)],
+                            colors: [iOSDesignSystem.Colors.primary100.opacity(0.2), iOSDesignSystem.Colors.primary200.opacity(0.2)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -201,7 +200,7 @@ struct EmptyTimelineView: View {
                 
                 Image(systemName: "timeline.selection")
                     .font(.system(size: 40, weight: .semibold))
-                    .foregroundColor(iOSDesignSystem.Colors.brandBlue)
+                    .foregroundColor(iOSDesignSystem.Colors.primary100)
             }
             
             VStack(spacing: AppSpacing.sm) {

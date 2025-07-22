@@ -4,37 +4,164 @@ import SwiftUI
 struct iOSDesignSystem {
     // MARK: - Colors
     struct Colors {
-        // Subtle gradient background colors - light gray to light blue
-        static let backgroundGradient = LinearGradient(
-            colors: [
-                Color(.systemGray6).opacity(0.8),
-                Color(.systemBlue).opacity(0.15)
-            ],
+        // Light Mode Colors
+        static let lightPrimary100 = Color(red: 0.545, green: 0.373, blue: 0.749) // #8B5FBF
+        static let lightPrimary200 = Color(red: 0.380, green: 0.224, blue: 0.561) // #61398F
+        static let lightPrimary300 = Color.white // #FFFFFF
+        
+        static let lightAccent100 = Color(red: 0.839, green: 0.776, blue: 0.882) // #D6C6E1
+        static let lightAccent200 = Color(red: 0.604, green: 0.451, blue: 0.710) // #9A73B5
+        
+        static let lightText100 = Color(red: 0.290, green: 0.290, blue: 0.290) // #4A4A4A
+        static let lightText200 = Color(red: 0.529, green: 0.529, blue: 0.529) // #878787
+        
+        static let lightBg100 = Color(red: 0.961, green: 0.953, blue: 0.969) // #F5F3F7
+        static let lightBg200 = Color(red: 0.914, green: 0.894, blue: 0.929) // #E9E4ED
+        static let lightBg300 = Color.white // #FFFFFF
+        
+        // Dark Mode Colors
+        static let darkPrimary100 = Color(red: 0.671, green: 0.537, blue: 0.831) // #AB89D4
+        static let darkPrimary200 = Color(red: 0.545, green: 0.373, blue: 0.749) // #8B5FBF
+        static let darkPrimary300 = Color(red: 0.118, green: 0.110, blue: 0.129) // #1E1C21
+        
+        static let darkAccent100 = Color(red: 0.545, green: 0.373, blue: 0.749) // #8B5FBF
+        static let darkAccent200 = Color(red: 0.671, green: 0.537, blue: 0.831) // #AB89D4
+        
+        static let darkText100 = Color(red: 0.933, green: 0.933, blue: 0.933) // #EEEEEE
+        static let darkText200 = Color(red: 0.733, green: 0.733, blue: 0.733) // #BBBBBB
+        
+        static let darkBg100 = Color(red: 0.118, green: 0.110, blue: 0.129) // #1E1C21
+        static let darkBg200 = Color(red: 0.161, green: 0.149, blue: 0.188) // #292630
+        static let darkBg300 = Color(red: 0.220, green: 0.204, blue: 0.251) // #383440
+        
+        // Adaptive Colors
+        static let primary100: Color = Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(darkPrimary100) : UIColor(lightPrimary100)
+        })
+        
+        static let primary200: Color = Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(darkPrimary200) : UIColor(lightPrimary200)
+        })
+        
+        static let primary300: Color = Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(darkPrimary300) : UIColor(lightPrimary300)
+        })
+        
+        static let accent100: Color = Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(darkAccent100) : UIColor(lightAccent100)
+        })
+        
+        static let accent200: Color = Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(darkAccent200) : UIColor(lightAccent200)
+        })
+        
+        static let text100: Color = Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(darkText100) : UIColor(lightText100)
+        })
+        
+        static let text200: Color = Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(darkText200) : UIColor(lightText200)
+        })
+        
+        static let bg100: Color = Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(darkBg100) : UIColor(lightBg100)
+        })
+        
+        static let bg200: Color = Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(darkBg200) : UIColor(lightBg200)
+        })
+        
+        static let bg300: Color = Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(darkBg300) : UIColor(lightBg300)
+        })
+        
+        // Light Mode Gradients
+        static let primaryGradient = LinearGradient(
+            colors: [primary100, primary200],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
         
-        static let appBackground = Color(.systemGray6)
+        static let accentGradient = LinearGradient(
+            colors: [accent100, accent200],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        
+        static let backgroundGradient = LinearGradient(
+            colors: [bg100, bg200],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        
+        // Dark Mode Gradients
+        static let darkPrimaryGradient = LinearGradient(
+            colors: [primary100, primary200],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        
+        // Tag Colors - Adaptive
+        static let todo = Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(red: 0.671, green: 0.537, blue: 0.831, alpha: 1.0) : UIColor(red: 0.545, green: 0.373, blue: 0.749, alpha: 1.0)
+        })
+        
+        static let idea = Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(red: 0.545, green: 0.373, blue: 0.749, alpha: 1.0) : UIColor(red: 0.380, green: 0.224, blue: 0.561, alpha: 1.0)
+        })
+        
+        static let tools = Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(red: 0.545, green: 0.373, blue: 0.749, alpha: 1.0) : UIColor(red: 0.839, green: 0.776, blue: 0.882, alpha: 1.0)
+        })
+        
+        static let general = Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(red: 0.671, green: 0.537, blue: 0.831, alpha: 1.0) : UIColor(red: 0.604, green: 0.451, blue: 0.710, alpha: 1.0)
+        })
+        
+        // System Colors (fallback)
+        static let background = Color(.systemBackground)
         static let secondaryBackground = Color(.secondarySystemBackground)
         static let tertiaryBackground = Color(.tertiarySystemBackground)
         
-        static let primaryText = Color(.label)
-        static let secondaryText = Color(.secondaryLabel)
-        static let tertiaryText = Color(.tertiaryLabel)
-        
-        // Brand blue accent for interactive elements
-        static let brandBlue = Color(red: 0.2, green: 0.4, blue: 0.9)
-        static let brandBlueLight = Color(red: 0.3, green: 0.5, blue: 1.0)
-        static let brandBlueSuperLight = Color(red: 0.89, green: 0.93, blue: 0.99)
-        
-        // Tag colors using system colors
-        static let todo = Color.systemRed
-        static let idea = Color.systemGreen
-        static let tools = Color.systemBlue
-        static let general = Color.systemGray
+        static let primaryText = text100
+        static let secondaryText = text200
         
         static let separator = Color(.separator)
-        static let accent = Color.accentColor
+        
+        // Brand Colors (for backward compatibility)
+        static let brandBlue = primary100
+        static let brandBlueLight = accent100
+        
+        // Tag Gradients
+        static let todoGradient = LinearGradient(
+            colors: [todo, Color(red: 0.380, green: 0.224, blue: 0.561)],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        
+        static let ideaGradient = LinearGradient(
+            colors: [idea, Color(red: 0.839, green: 0.776, blue: 0.882)],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        
+        static let toolsGradient = LinearGradient(
+            colors: [tools, Color(red: 0.604, green: 0.451, blue: 0.710)],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        
+        static let generalGradient = LinearGradient(
+            colors: [general, Color(red: 0.545, green: 0.373, blue: 0.749)],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        
+        static let allGradient = LinearGradient(
+            colors: [primary100, accent200],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
     }
     
     // MARK: - Typography

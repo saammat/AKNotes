@@ -34,12 +34,12 @@ struct TimelineNoteCard: View {
                 .multilineTextAlignment(.leading)
         }
         .padding(16)
-        .background(Color(.systemBackground))
+        .background(iOSDesignSystem.Colors.bg200)
         .cornerRadius(10)
         .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(iOSDesignSystem.Colors.brandBlue.opacity(0.1), lineWidth: 1)
+                .stroke(iOSDesignSystem.Colors.accent200.opacity(0.1), lineWidth: 1)
         )
         .contextMenu {
             Button(role: .destructive) {

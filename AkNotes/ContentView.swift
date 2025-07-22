@@ -212,7 +212,7 @@ struct SearchBar: View {
         .cornerRadius(20)
         .overlay(
             RoundedRectangle(cornerRadius: 20)
-                .stroke(isFocused ? iOSDesignSystem.Colors.brandBlue.opacity(0.3) : Color.clear, lineWidth: 1)
+                .stroke(isFocused ? iOSDesignSystem.Colors.accent200.opacity(0.3) : Color.clear, lineWidth: 1)
         )
     }
 }
@@ -226,7 +226,7 @@ struct FloatingAddButton: View {
                 .font(.system(size: 20, weight: .semibold))
                 .foregroundColor(.white)
                 .frame(width: 56, height: 56)
-                .background(iOSDesignSystem.Colors.brandBlue)
+                .background(LinearGradient(colors: [iOSDesignSystem.Colors.primary100, iOSDesignSystem.Colors.primary200], startPoint: .topLeading, endPoint: .bottomTrailing))
                 .clipShape(Circle())
                 .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
         }

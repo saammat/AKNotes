@@ -49,31 +49,16 @@ struct EditNoteView: View {
                 }
                 
                 Section("预览") {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text(selectedTag.displayName)
-                                .font(.system(.caption2, design: .rounded, weight: .medium))
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(
-                                    Capsule()
-                                        .fill(Color.accentColor)
-                                )
-                            
-                            Spacer()
-                            
-                            Text(selectedDate, style: .time)
-                                .font(.system(.caption, design: .rounded, weight: .medium))
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        Text(content)
-                            .font(.system(.body, design: .rounded))
-                            .foregroundColor(.primary)
-                            .lineSpacing(2)
-                    }
-                    .padding(.vertical, 8)
+                    TimelineNoteCard(
+                        note: Note(
+                            content: content,
+                            tag: selectedTag,
+                            createdAt: selectedDate
+                        ),
+                        onDelete: { _ in },
+                        onEdit: {}
+                    )
+                    .padding(.horizontal, 0)
                 }
             }
             .navigationTitle("编辑笔记")
