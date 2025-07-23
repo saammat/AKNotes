@@ -46,6 +46,7 @@ struct AddNoteModal: View {
                     Button("取消") {
                         dismiss()
                     }
+                    .foregroundColor(iOSDesignSystem.Colors.primary200)
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
@@ -53,6 +54,8 @@ struct AddNoteModal: View {
                         addNote()
                     }
                     .disabled(content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .foregroundColor(content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? .gray : iOSDesignSystem.Colors.primary200)
+                    
                 }
             }
         }

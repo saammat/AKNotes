@@ -68,6 +68,7 @@ struct EditNoteView: View {
                     Button("取消") {
                         dismiss()
                     }
+                    .foregroundColor(iOSDesignSystem.Colors.primary200)
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
@@ -75,6 +76,7 @@ struct EditNoteView: View {
                         saveChanges()
                     }
                     .disabled(content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .foregroundColor(content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? .gray : iOSDesignSystem.Colors.primary200)
                 }
             }
         }

@@ -294,6 +294,7 @@ struct SettingsView: View {
                     Button("完成") {
                         dismiss()
                     }
+                    .foregroundColor(iOSDesignSystem.Colors.primary200)
                 }
             }
             .alert("确认删除", isPresented: $showingDeleteAllAlert) {
