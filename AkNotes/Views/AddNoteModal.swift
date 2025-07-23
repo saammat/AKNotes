@@ -103,7 +103,7 @@ struct TagSelectionChip: View {
             .padding(.vertical, 6)
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(isSelected ? AnyShapeStyle(tagGradient) : AnyShapeStyle(Color(.tertiarySystemFill)))
+                    .fill(isSelected ? AnyShapeStyle(iOSDesignSystem.Colors.accent200) : AnyShapeStyle(Color(.tertiarySystemFill)))
             )
             .scaleEffect(isSelected ? 1.05 : 1.0)
         }
@@ -116,15 +116,6 @@ struct TagSelectionChip: View {
         case .idea: return "lightbulb"
         case .tools: return "wrench"
         case .general: return "note"
-        }
-    }
-    
-    private var tagGradient: LinearGradient {
-        switch tag {
-        case .todo: return AppColors.todoGradient
-        case .idea: return AppColors.ideaGradient
-        case .tools: return AppColors.toolsGradient
-        case .general: return AppColors.generalGradient
         }
     }
 }

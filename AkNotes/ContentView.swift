@@ -76,7 +76,7 @@ struct ContentView: View {
     
     private var modernFilterSection: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 12) {
+            HStack(spacing: 8) {
                 FilterChip(
                     title: "全部",
                     icon: "square.grid.2x2",
@@ -87,7 +87,7 @@ struct ContentView: View {
                             HapticManager.shared.playSelection()
                         }
                     },
-                    gradientColor: AppColors.allGradient
+                    color: iOSDesignSystem.Colors.accent200
                 )
                 
                 ForEach(NoteTag.allCases, id: \.self) { tag in
@@ -101,7 +101,7 @@ struct ContentView: View {
                                 HapticManager.shared.playSelection()
                             }
                         },
-                        gradientColor: tagGradient(for: tag)
+                        color: iOSDesignSystem.Colors.accent200
                     )
                 }
             }
@@ -239,7 +239,7 @@ struct FilterChip: View {
     let icon: String
     let isSelected: Bool
     let action: () -> Void
-    let gradientColor: LinearGradient
+    let color: Color
     
     var body: some View {
         Button(action: action) {
@@ -255,7 +255,7 @@ struct FilterChip: View {
             .padding(.vertical, 8)
             .background(
                 RoundedRectangle(cornerRadius: 20)
-                    .fill(isSelected ? AnyShapeStyle(gradientColor) : AnyShapeStyle(Color(.tertiarySystemFill)))
+                    .fill(isSelected ? AnyShapeStyle(color) : AnyShapeStyle(Color(.tertiarySystemFill)))
             )
         }
         .buttonStyle(.plain)
