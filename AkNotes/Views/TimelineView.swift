@@ -5,138 +5,119 @@ struct TimelineView: View {
     let onDelete: (Note) -> Void
     let onEdit: (Note) -> Void
     
-    private var groupedNotes: [(String, [Note])] {
-        let grouped = Dictionary(grouping: notes) { note in
-            note.createdAt.formatted(date: .abbreviated, time: .omitted)
+    private var notesWithDateFlags: [(note: Note, shouldShowDate: Bool, date: Date, isEarliestOfDay: Bool, isFirstNote: Bool)] {
+        let groupedByDate = Dictionary(grouping: notes) { note in
+            Calendar.current.startOfDay(for: note.createdAt)
         }
-        return grouped.sorted { $0.key > $1.key }.map { ($0.key, $0.value) }
+        
+        let sortedNotes = notes.sorted { $0.createdAt > $1.createdAt }
+        
+        return sortedNotes.enumerated().map { index, note in
+            let dayStart = Calendar.current.startOfDay(for: note.createdAt)
+            let dayNotes = groupedByDate[dayStart] ?? []
+            let latestNote = dayNotes.max { $0.createdAt < $1.createdAt }
+            let earliestNote = dayNotes.min { $0.createdAt < $1.createdAt }
+            let firstNote = index == 0
+            
+            let isEarliestOfDay = note.id == earliestNote?.id
+            
+            return (
+                note: note,
+                shouldShowDate: note.id == latestNote?.id,
+                date: dayStart,
+                isEarliestOfDay: isEarliestOfDay,
+                isFirstNote: firstNote
+            )
+        }
     }
     
     var body: some View {
         ScrollView {
-            ZStack(alignment: .leading) {
-                // Continuous vertical timeline line
-                timelineBackgroundLine
-                
-                // Content with timeline dots
-                LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
-                    ForEach(groupedNotes, id: \.0) { dateString, dayNotes in
-                        TimelineSection(
-                            dateString: dateString,
-                            notes: dayNotes,
-                            onDelete: onDelete,
-                            onEdit: onEdit
-                        )
-                    }
+            LazyVStack(spacing: 0) {
+                ForEach(notesWithDateFlags, id: \.note.id) { item in
+                    TimelineRow(
+                        note: item.note,
+                        shouldShowDate: item.shouldShowDate,
+                        date: item.date,
+                        isEarliestOfDay: item.isEarliestOfDay,
+                        isFirstNote: item.isFirstNote,
+                        onDelete: onDelete,
+                        onEdit: onEdit
+                    )
                 }
-                .padding(.horizontal, 0)
-                .padding(.top, AppSpacing.md)
-                .padding(.bottom, AppSpacing.xl)
             }
+            .padding(.horizontal, 0)
+            .padding(.top, AppSpacing.md)
+            .padding(.bottom, AppSpacing.xl)
         }
         .scrollIndicators(.hidden)
-    }
-    
-    private var timelineBackgroundLine: some View {
-        GeometryReader { geometry in
-            Rectangle()
-                .fill(iOSDesignSystem.Colors.accent200)
-                .frame(width: 1)
-                .frame(height: max(geometry.size.height, 100))
-                .position(x: 20, y: geometry.size.height / 2)
-        }
-        .frame(width: 40)
-    }
-}
-
-struct TimelineSection: View {
-    let dateString: String
-    let notes: [Note]
-    let onDelete: (Note) -> Void
-    let onEdit: (Note) -> Void
-    
-    var body: some View {
-        Section {
-            ForEach(Array(notes.enumerated()), id: \.element.id) { index, note in
-                TimelineRow(
-                    note: note,
-                    onDelete: onDelete,
-                    onEdit: onEdit
-                )
-            }
-        } header: {
-            TimelineHeader(dateString: dateString)
-        }
-        .padding(.bottom, AppSpacing.lg)
-    }
-}
-
-struct TimelineHeader: View {
-    let dateString: String
-    
-    var body: some View {
-        HStack {
-            Text(formattedDate(dateString))
-                .font(AppTypography.headline)
-                .foregroundColor(.primary)
-            Spacer()
-        }
-        .padding(.horizontal, 44)
-    }
-    
-    private var dayOfWeek: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        if let date = formatter.date(from: dateString) {
-            let weekdayFormatter = DateFormatter()
-            weekdayFormatter.dateFormat = "EEE"
-            weekdayFormatter.locale = Locale(identifier: "zh_CN")
-            return weekdayFormatter.string(from: date)
-        }
-        return ""
-    }
-    
-    private func formattedDate(_ dateString: String) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        if let date = formatter.date(from: dateString) {
-            let displayFormatter = DateFormatter()
-            displayFormatter.dateFormat = "MM月dd日"
-            return displayFormatter.string(from: date)
-        }
-        return dateString
     }
 }
 
 struct TimelineRow: View {
     let note: Note
+    let shouldShowDate: Bool
+    let date: Date
+    let isEarliestOfDay: Bool
+    let isFirstNote: Bool
     let onDelete: (Note) -> Void
     let onEdit: (Note) -> Void
     
     var body: some View {
-        HStack(alignment: .top, spacing: 0) {
-            // Timeline dot (aligned with continuous background line)
-            timelineIndicator
-                .padding(.leading, 16) // Align with background line position
+        VStack(spacing: 0) {
+            // Add extra spacing before the earliest note of each day
+            if shouldShowDate {
+                if !isFirstNote {
+                    Spacer()
+                        .frame(height: AppSpacing.md) // Significant day separation
+                }
+            }
             
-            // Note card
-            noteCard
-                .padding(.leading, AppSpacing.md)
-                .padding(.trailing, AppSpacing.md)
+            HStack(alignment: .top, spacing: 0) {
+                // Date display aligned with top of note card
+                if shouldShowDate {
+                    VStack(spacing: 2) {
+                        let components = Calendar.current.dateComponents([.month, .day, .year], from: date)
+                        let monthSymbols = Calendar.current.shortMonthSymbols
+                        let month = monthSymbols[components.month! - 1]
+                        let day = String(components.day!)
+                        let year = String(components.year!)
+                        
+                        Text(month)
+                            .font(.system(size: 12, weight: .medium, design: .rounded))
+                            .foregroundColor(.secondary)
+                        Text(day)
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
+                            .foregroundColor(.primary)
+                        Text(year)
+                            .font(.system(size: 11, weight: .regular, design: .rounded))
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 6)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color(.systemBackground))
+                            .shadow(color: Color.black.opacity(0.08), radius: 2, x: 0, y: 1)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color(.separator).opacity(0.2), lineWidth: 0.5)
+                    )
+                    .padding(.leading, 8)
+                } else {
+                    // Empty spacer for alignment
+                    Color.clear
+                        .frame(width: 52) // Same width as date display
+                }
+                
+                // Note card
+                noteCard
+                    .padding(.leading, AppSpacing.sm)
+                    .padding(.trailing, AppSpacing.md)
+            }
+            .padding(.vertical, AppSpacing.xs)
         }
-        .padding(.vertical, AppSpacing.xs)
-    }
-    
-    private var timelineIndicator: some View {
-        // iOS-style dot
-        Circle()
-            .fill(tagColor)
-            .frame(width: 10, height: 10)
-            .overlay(
-                Circle()
-                    .stroke(Color(.systemBackground), lineWidth: 2)
-            )
-            .padding(.top, 8)
     }
     
     private var tagColor: Color {
