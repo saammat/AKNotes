@@ -11,18 +11,18 @@ struct TimelineNoteCard: View {
             HStack {
                 HStack(spacing: 4) {
                     Image(systemName: tagIcon)
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(tagColor)
                     
                     Text(note.tag.displayName)
-                        .font(.system(.caption, weight: .medium))
+                        .font(.system(size: 14, weight: .medium))
                         .foregroundColor(tagColor)
                 }
                 
                 Spacer()
                 
                 Text(note.createdAt, style: .time)
-                    .font(.system(.caption, weight: .regular))
+                    .font(.system(size: 14, weight: .regular))
                     .foregroundColor(.secondary)
             }
             
@@ -33,7 +33,8 @@ struct TimelineNoteCard: View {
                 .lineSpacing(2)
                 .multilineTextAlignment(.leading)
         }
-        .padding(16)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
         .background(iOSDesignSystem.Colors.bg200)
         .cornerRadius(10)
         .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)

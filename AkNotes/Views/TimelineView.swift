@@ -77,16 +77,10 @@ struct TimelineHeader: View {
     var body: some View {
         HStack {
             Text(formattedDate(dateString))
-                .font(AppTypography.title3)
+                .font(AppTypography.headline)
                 .foregroundColor(.primary)
-            
             Spacer()
-            
-            Text(dayOfWeek)
-                .font(AppTypography.subheadline)
-                .foregroundColor(.secondary)
         }
-        .padding(.vertical, 12)
         .padding(.horizontal, 44)
     }
     
