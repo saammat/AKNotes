@@ -96,8 +96,12 @@ struct TimelineRow: View {
                     .padding(.horizontal, 8)
                     .padding(.vertical, 6)
                     .background(
+                        Calendar.current.isDateInToday(date) ?
                         RoundedRectangle(cornerRadius: 8)
                             .fill(Color(.systemBackground))
+                            .shadow(color: Color.black.opacity(0.08), radius: 2, x: 0, y: 1) :
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(iOSDesignSystem.Colors.bg200)
                             .shadow(color: Color.black.opacity(0.08), radius: 2, x: 0, y: 1)
                     )
                     .overlay(
