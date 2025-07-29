@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var viewModel = NotesViewModel()
+    @StateObject private var notesViewModel = NotesViewModel()
     @State private var selectedFilter: NoteTag? = nil
     @State private var selectedTab = 0
     @StateObject private var noteStore = NoteStore()
@@ -23,45 +23,46 @@ struct ContentView: View {
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            // Notes Tab
             NavigationView {
                 ZStack {
                     backgroundGradient
-                    
                     VStack {
-                        // Search and Filter section
                         VStack(spacing: 0) {
-                            // Search bar
                             SearchBar(text: $searchText)
                                 .padding(.horizontal, AppSpacing.md)
                                 .padding(.top, AppSpacing.md)
                             
-                            // Filter section
                             modernFilterSection
                                 .padding(.vertical, AppSpacing.md)
                         }
-                        
-                        // Timeline notes
                         let filteredNotes = getFilteredNotes()
-                        
-                        if filteredNotes.isEmpty {
-                            VStack {
-                                EmptyTimelineView()
-                                Spacer()
-                            }
-                        } else {
-                            TimelineView(
-                                notes: filteredNotes,
-                                onDelete: { note in
-                                    viewModel.deleteNote(note)
-                                    HapticManager.shared.playSuccess()
-                                },
-                                onEdit: { note in
-                                    noteToEdit = note
-                                    showingEditNote = true
-                                    HapticManager.shared.playSelection()
+                        ZStack(alignment: .bottomTrailing) {
+                            if filteredNotes.isEmpty {
+                                VStack {
+                                    EmptyTimelineView()
+                                    Spacer()
                                 }
-                            )
+                            } else {
+                                TimelineView(
+                                    notes: filteredNotes,
+                                    onDelete: { note in
+                                        notesViewModel.deleteNote(note)
+                                        HapticManager.shared.playSuccess()
+                                    },
+                                    onEdit: { note in
+                                        noteToEdit = note
+                                        showingEditNote = true
+                                        HapticManager.shared.playSelection()
+                                    }
+                                )
+                            }
+                            
+                            FloatingAddButton {
+                                showingAddNote = true
+                                HapticManager.shared.playSelection()
+                            }
+                            .padding(.trailing, AppSpacing.md)
+                            .padding(.bottom, AppSpacing.xl)
                         }
                     }
                 }
@@ -87,28 +88,10 @@ struct ContentView: View {
             }
             .tag(0)
             
-//            // Add Tab - Using a placeholder view
-//            NavigationView {
-//                Color.clear
-//                    .navigationBarHidden(true)
-//                    .onAppear {
-//                        handleAddAction()
-//                    }
-//            }
-//            .tabItem {
-//                Image(systemName: "plus.circle.fill")
-//                    .font(.system(size: 30))
-//                Text("添加")
-//            }
-//            .tag(1)
-            
-            // Tags Tab
             NavigationView {
                 ZStack {
                     backgroundGradient
-                    
                     TagsListView()
-                    
                 }
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
@@ -133,20 +116,12 @@ struct ContentView: View {
             .tag(2)
         }
         .onAppear(perform: setupTabBarAppearance)
-        .onChange(of: selectedTab) { newTab in
-            if newTab == 1 {
-                handleAddAction()
-                DispatchQueue.main.async {
-                    selectedTab = 0
-                }
-            }
-        }
         .sheet(isPresented: $showingSettings) {
-            SettingsView(viewModel: viewModel)
+            SettingsView(viewModel: notesViewModel)
         }
         .sheet(isPresented: $showingAddNote) {
             AddNoteView { note in
-                noteStore.add(note)
+                notesViewModel.addNote(note)
                 showingAddNote = false
             } onCancel: {
                 showingAddNote = false
@@ -154,7 +129,6 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showingAddTag) {
             AddTagView { tag in
-                // Add tag logic
                 showingAddTag = false
             } onCancel: {
                 showingAddTag = false
@@ -221,7 +195,7 @@ struct ContentView: View {
     }
     
     private func getFilteredNotes() -> [Note] {
-        let notes = viewModel.filterNotes(by: selectedFilter)
+        let notes = notesViewModel.filterNotes(by: selectedFilter)
         
         if searchText.isEmpty {
             return notes

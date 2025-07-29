@@ -13,7 +13,7 @@ class NotesViewModel: ObservableObject {
         loadNotes()
     }
     
-    func addNote() {
+    func addNoteV2() {
         guard !newContent.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         
         let newNote = Note(content: newContent.trimmingCharacters(in: .whitespacesAndNewlines), tag: selectedTag)
@@ -23,6 +23,11 @@ class NotesViewModel: ObservableObject {
             HapticManager.shared.playSuccess()
             saveNotes()
         }
+    }
+    
+    func addNote(_ note: Note) {
+        notes.append(note)
+        saveNotes()
     }
     
     func deleteNote(at indexSet: IndexSet) {
