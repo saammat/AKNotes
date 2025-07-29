@@ -65,10 +65,10 @@ struct TimelineNoteCard: View {
     
     private var tagColor: Color {
         switch note.tag {
-        case .todo: return .systemRed
-        case .idea: return .systemGreen
-        case .tools: return .systemBlue
-        case .general: return .systemGray
+        case .todo: return iOSDesignSystem.Colors.todo
+        case .idea: return iOSDesignSystem.Colors.idea
+        case .tools: return iOSDesignSystem.Colors.tools
+        case .general: return iOSDesignSystem.Colors.general
         }
     }
 }
