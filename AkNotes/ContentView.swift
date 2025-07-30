@@ -134,6 +134,11 @@ struct ContentView: View {
                 showingAddTag = false
             }
         }
+        .sheet(isPresented: $showingEditNote) {
+            if let noteToEdit = noteToEdit {
+                EditNoteView(viewModel: notesViewModel, note: noteToEdit)
+            }
+        }
     }
     
     private var backgroundGradient: some View {

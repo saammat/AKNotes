@@ -28,18 +28,17 @@ struct EditNoteView: View {
                 }
                 
                 Section("标签") {
-                    HStack(spacing: 8) {
+                    Picker("选择标签", selection: $selectedTag) {
                         ForEach(NoteTag.allCases, id: \.self) { tag in
-                            CompactTagChip(
-                                tag: tag,
-                                isSelected: selectedTag == tag,
-                                action: {
-                                    selectedTag = tag
-                                }
-                            )
-                            .frame(maxWidth: .infinity)
+                            HStack {
+                                Image(systemName: tagIcon(for: tag))
+                                    .foregroundColor(tagColor(for: tag))
+                                Text(tag.displayName)
+                            }
+                            .tag(tag)
                         }
                     }
+                    .pickerStyle(.menu)
                 }
                 
                 Section("时间") {
@@ -94,10 +93,19 @@ struct EditNoteView: View {
     
     private func tagIcon(for tag: NoteTag) -> String {
         switch tag {
-        case .todo: return "checkmark.circle"
-        case .idea: return "lightbulb"
-        case .tools: return "wrench"
+        case .todo: return "checkmark.circle.fill"
+        case .idea: return "lightbulb.fill"
+        case .tools: return "wrench.fill"
         case .general: return "note"
+        }
+    }
+    
+    private func tagColor(for tag: NoteTag) -> Color {
+        switch tag {
+        case .todo: return .systemRed
+        case .idea: return .systemGreen
+        case .tools: return .systemBlue
+        case .general: return .systemGray
         }
     }
 }
