@@ -55,20 +55,10 @@ struct TimelineNoteCard: View {
     }
     
     private var tagIcon: String {
-        switch note.tag {
-        case .todo: return "checkmark.circle.fill"
-        case .idea: return "lightbulb.fill"
-        case .tools: return "wrench.fill"
-        case .general: return "note"
-        }
+        return note.displayTagIcon
     }
     
     private var tagColor: Color {
-        switch note.tag {
-        case .todo: return iOSDesignSystem.Colors.todo
-        case .idea: return iOSDesignSystem.Colors.idea
-        case .tools: return iOSDesignSystem.Colors.tools
-        case .general: return iOSDesignSystem.Colors.general
-        }
+        return note.displayTagColor
     }
 }

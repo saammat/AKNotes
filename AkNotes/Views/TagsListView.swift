@@ -1,102 +1,81 @@
 import SwiftUI
 
 struct TagsListView: View {
-    @State private var tags: [NoteTag] = NoteTag.allCases
+    let onAddTag: () -> Void
+    let onDeleteTag: (CustomTag) -> Void
+    let allTags: [CustomTag]
     @State private var searchText = ""
     
-    var filteredTags: [NoteTag] {
+    var filteredTags: [CustomTag] {
         if searchText.isEmpty {
-            return tags
+            return allTags
         } else {
-            return tags.filter { $0.displayName.localizedCaseInsensitiveContains(searchText) }
+            return allTags.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
         }
     }
     
     var body: some View {
-        VStack {
-            SearchBar(text: $searchText)
-                .padding(.horizontal, AppSpacing.md)
-                .padding(.top, AppSpacing.md)
-            
-            ScrollView {
-                LazyVStack(spacing: 12) {
-                    ForEach(filteredTags, id: \.self) { tag in
-                        tagCard(for: tag)
+        ZStack(alignment: .bottomTrailing) {
+            VStack {
+                SearchBar(text: $searchText)
+                    .padding(.horizontal, AppSpacing.md)
+                    .padding(.top, AppSpacing.md)
+                
+                ScrollView {
+                    LazyVStack(spacing: 12) {
+                        ForEach(filteredTags, id: \.id) { tag in
+                            tagCard(for: tag)
+                        }
                     }
+                    .padding(.horizontal, AppSpacing.md)
+                    .padding(.vertical, AppSpacing.md)
                 }
-                .padding(.horizontal, AppSpacing.md)
-                .padding(.vertical, AppSpacing.md)
             }
+            
+            FloatingAddButton {
+                onAddTag()
+            }
+            .padding(.trailing, AppSpacing.md)
+            .padding(.bottom, AppSpacing.xl)
         }
         .background(Color.clear)
     }
     
-    private func tagCard(for tag: NoteTag) -> some View {
+    private func tagCard(for tag: CustomTag) -> some View {
         HStack(spacing: 16) {
-            Image(systemName: tagIcon(for: tag))
-                .foregroundColor(tagColor(for: tag))
+            Image(systemName: tag.icon)
+                .foregroundColor(tag.tagColor)
                 .font(.system(size: 20, weight: .semibold))
                 .frame(width: 32, height: 32)
                 .background(
                     Circle()
-                        .fill(tagColor(for: tag).opacity(0.1))
+                        .fill(tag.tagColor.opacity(0.1))
                 )
             
             HStack() {
-                Text(tag.displayName)
+                Text(tag.name)
                     .font(.system(.body, design: .rounded, weight: .medium))
                     .foregroundColor(.primary)
                 
                 Spacer()
                 
-                Text("\(noteCount(for: tag)) 个笔记")
+                Text("0 个笔记")
                     .font(.system(.callout, design: .rounded))
                     .foregroundColor(.secondary)
-                
-//                Text("\(noteCount(for: tag))")
-//                    .font(.system(.callout, design: .rounded, weight: .semibold))
-//                    .foregroundColor(.secondary)
-//                    .padding(.horizontal, 12)
-//                    .padding(.vertical, 6)
-//                    .background(
-//                        RoundedRectangle(cornerRadius: 12)
-//                            .fill(Color(.tertiarySystemFill))
-//                            .frame(width: 64, height: 24)
-//                    )
             }
             
             Spacer()
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 16)
-//        .background(
-//            RoundedRectangle(cornerRadius: 12)
-//                .fill(Color(.systemBackground))
-//                .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
-//        )
-    }
-    
-    private func tagIcon(for tag: NoteTag) -> String {
-        switch tag {
-        case .todo: return "checkmark.circle.fill"
-        case .idea: return "lightbulb.fill"
-        case .tools: return "wrench.fill"
-        case .general: return "note"
+        .contextMenu {
+            Button(role: .destructive) {
+                onDeleteTag(tag)
+                HapticManager.shared.playSuccess()
+            } label: {
+                Label("删除", systemImage: "trash")
+            }
         }
-    }
-    
-    private func tagColor(for tag: NoteTag) -> Color {
-        switch tag {
-        case .todo: return iOSDesignSystem.Colors.todo
-        case .idea: return iOSDesignSystem.Colors.idea
-        case .tools: return iOSDesignSystem.Colors.tools
-        case .general: return iOSDesignSystem.Colors.general
-        }
-    }
-    
-    private func noteCount(for tag: NoteTag) -> Int {
-        // Placeholder - will be implemented with actual data
-        return Int.random(in: 1...20)
     }
 }
 
@@ -110,11 +89,21 @@ struct NotesForTagView: View {
 }
 
 struct AddTagView: View {
-    let onSave: (NoteTag) -> Void
+    let onSave: (CustomTag) -> Void
     let onCancel: () -> Void
     
     @State private var tagName = ""
-    @State private var selectedTagType: NoteTag = .general
+    @State private var selectedIcon: String = "tag"
+    
+    private let availableIcons = [
+        "star", "heart", "bookmark", "flag", "bell", "tag", "folder", "doc", "paperclip",
+        "camera", "music.note", "headphones", "mic", "video", "gamecontroller", "gift",
+        "leaf", "flame", "snow", "cloud", "moon", "sun", "rainbow", "bolt",
+        "car", "airplane", "train", "bus", "bicycle", "ship", "location", "map",
+        "cart", "bag", "creditcard", "dollarsign", "percent", "chart.bar", "chart.pie",
+        "book", "graduationcap", "briefcase", "house", "building", "tree", "cup",
+        "pencil", "scissors", "paintbrush", "trash", "folder.fill", "doc.fill"
+    ]
     
     var body: some View {
         NavigationView {
@@ -122,18 +111,51 @@ struct AddTagView: View {
                 Section(header: Text("标签信息")) {
                     TextField("标签名称", text: $tagName)
                         .font(.system(.body, design: .rounded))
-                    
-                    Picker("标签类型", selection: $selectedTagType) {
-                        ForEach(NoteTag.allCases, id: \.self) { tag in
-                            HStack {
-                                Image(systemName: tagIcon(for: tag))
-                                    .foregroundColor(tagColor(for: tag))
-                                Text(tag.displayName)
+                }
+                
+                Section(header: Text("标签图标")) {
+                    ScrollView(.vertical, showsIndicators: false) {
+                        LazyVGrid(columns: [
+                            GridItem(.flexible(), spacing: 12),
+                            GridItem(.flexible(), spacing: 12),
+                            GridItem(.flexible(), spacing: 12),
+                            GridItem(.flexible(), spacing: 12)
+                        ], spacing: 12) {
+                            ForEach(availableIcons, id: \.self) { icon in
+                                Button(action: {
+                                    selectedIcon = icon
+                                }) {
+                                    Image(systemName: icon)
+                                        .font(.system(size: 20))
+                                        .foregroundColor(selectedIcon == icon ? .white : .primary)
+                                        .frame(width: 50, height: 50)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .fill(selectedIcon == icon ? iOSDesignSystem.Colors.primary200 : iOSDesignSystem.Colors.bg200)
+                                        )
+                                }
+                                .buttonStyle(.plain)
                             }
-                            .tag(tag)
                         }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
                     }
-                    .pickerStyle(.menu)
+                    .frame(height: 220)
+                }
+                
+                Section(header: Text("预览")) {
+                    HStack {
+                        Image(systemName: selectedIcon)
+                            .foregroundColor(iOSDesignSystem.Colors.primary200)
+                            .font(.system(size: 20))
+                        Text(tagName.isEmpty ? "标签名称" : tagName)
+                            .font(.system(.body, design: .rounded, weight: .medium))
+                            .foregroundColor(.primary)
+                        Spacer()
+                    }
+                    .padding()
+                    .background(iOSDesignSystem.Colors.bg200)
+                    .cornerRadius(8)
                 }
             }
             .navigationTitle("添加标签")
@@ -146,7 +168,8 @@ struct AddTagView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("保存") {
-                        onSave(selectedTagType)
+                        let customTag = CustomTag(name: tagName, icon: selectedIcon)
+                        onSave(customTag)
                     }
                     .disabled(tagName.isEmpty)
                 }

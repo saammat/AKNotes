@@ -15,6 +15,10 @@ struct ContentView: View {
     @State private var searchText = ""
     @State private var searchTag = ""
     @State private var noteToEdit: Note?
+    @State private var customTags: [CustomTag] = []
+    @State private var deletedPredefinedTagIds: Set<UUID> = []
+    @State private var customTagToDelete: CustomTag?
+    @State private var showingDeleteAlert = false
     
     @State private var showingSettings = false
     @State private var showingAddNote = false
@@ -91,7 +95,17 @@ struct ContentView: View {
             NavigationView {
                 ZStack {
                     backgroundGradient
-                    TagsListView()
+                    TagsListView(
+                        onAddTag: {
+                            showingAddTag = true
+                            HapticManager.shared.playSelection()
+                        },
+                        onDeleteTag: { tag in
+                            customTagToDelete = tag
+                            showingDeleteAlert = true
+                        },
+                        allTags: getAllTags()
+                    )
                 }
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
@@ -128,8 +142,10 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $showingAddTag) {
-            AddTagView { tag in
+            AddTagView { customTag in
+                customTags.append(customTag)
                 showingAddTag = false
+                HapticManager.shared.playSuccess()
             } onCancel: {
                 showingAddTag = false
             }
@@ -137,6 +153,29 @@ struct ContentView: View {
         .sheet(isPresented: $showingEditNote) {
             if let noteToEdit = noteToEdit {
                 EditNoteView(viewModel: notesViewModel, note: noteToEdit)
+            }
+        }
+        .alert("删除标签", isPresented: $showingDeleteAlert) {
+            Button("取消", role: .cancel) {
+                customTagToDelete = nil
+            }
+            Button("删除", role: .destructive) {
+                if let customTagToDelete = customTagToDelete {
+                    // 首先尝试从自定义标签中删除
+                    if let index = customTags.firstIndex(where: { $0.id == customTagToDelete.id }) {
+                        customTags.remove(at: index)
+                        HapticManager.shared.playSuccess()
+                    } else {
+                        // 如果不是自定义标签，则添加到已删除的预定义标签集合中
+                        deletedPredefinedTagIds.insert(customTagToDelete.id)
+                        HapticManager.shared.playSuccess()
+                    }
+                }
+                customTagToDelete = nil
+            }
+        } message: {
+            if let customTagToDelete = customTagToDelete {
+                Text("确定要删除标签\"\(customTagToDelete.name)\"吗？此操作不可撤销。")
             }
         }
     }
@@ -209,6 +248,17 @@ struct ContentView: View {
                 note.content.localizedCaseInsensitiveContains(searchText)
             }
         }
+    }
+    
+    private func getAllTags() -> [CustomTag] {
+        let predefinedTags: [CustomTag] = [
+            CustomTag(id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!, name: "待办", icon: "checkmark.circle.fill", color: "#FF6B6B"),
+            CustomTag(id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!, name: "想法", icon: "lightbulb.fill", color: "#4ECDC4"),
+            CustomTag(id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!, name: "工具", icon: "wrench.fill", color: "#667eea"),
+            CustomTag(id: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!, name: "一般", icon: "note", color: "#8E8E93")
+        ]
+        let activePredefinedTags = predefinedTags.filter { !deletedPredefinedTagIds.contains($0.id) }
+        return activePredefinedTags + customTags
     }
     
     private func setupTabBarAppearance() {
