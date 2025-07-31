@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import Combine
 
 struct ContentView: View {
     @StateObject private var notesViewModel = NotesViewModel()
     @State private var selectedFilter: NoteTag? = nil
+    @State private var selectedCustomTag: CustomTag? = nil
     @State private var selectedTab = 0
     @StateObject private var noteStore = NoteStore()
     @State private var searchText = ""
@@ -39,16 +41,15 @@ struct ContentView: View {
                             modernFilterSection
                                 .padding(.vertical, AppSpacing.md)
                         }
-                        let filteredNotes = getFilteredNotes()
                         ZStack(alignment: .bottomTrailing) {
-                            if filteredNotes.isEmpty {
+                            if getFilteredNotes().isEmpty {
                                 VStack {
                                     EmptyTimelineView()
                                     Spacer()
                                 }
                             } else {
                                 TimelineView(
-                                    notes: filteredNotes,
+                                    notes: getFilteredNotes(),
                                     onDelete: { note in
                                         notesViewModel.deleteNote(note)
                                         HapticManager.shared.playSuccess()
@@ -71,20 +72,17 @@ struct ContentView: View {
                     }
                 }
                 .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Text("AkNotes")
-                            .font(AppTypography.title)
+                .navigationBarItems(leading: 
+                    Text("AkNotes")
+                        .font(AppTypography.title)
+                        .foregroundColor(.primary),
+                    trailing:
+                    Button(action: { showingSettings = true }) {
+                        Image(systemName: "gear")
+                            .font(.system(size: 18, weight: .semibold))
                             .foregroundColor(.primary)
                     }
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: { showingSettings = true }) {
-                            Image(systemName: "gear")
-                                .font(.system(size: 18, weight: .semibold))
-                                .foregroundColor(.primary)
-                        }
-                    }
-                }
+                )
             }
             .tabItem {
                 Image(systemName: "note.text")
@@ -104,24 +102,22 @@ struct ContentView: View {
                             customTagToDelete = tag
                             showingDeleteAlert = true
                         },
-                        allTags: getAllTags()
+                        allTags: getAllTags(),
+                        notes: notesViewModel.notes
                     )
                 }
                 .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Text("AkNotes")
-                            .font(AppTypography.title)
+                .navigationBarItems(leading: 
+                    Text("AkNotes")
+                        .font(AppTypography.title)
+                        .foregroundColor(.primary),
+                    trailing:
+                    Button(action: { showingSettings = true }) {
+                        Image(systemName: "gear")
+                            .font(.system(size: 18, weight: .semibold))
                             .foregroundColor(.primary)
                     }
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: { showingSettings = true }) {
-                            Image(systemName: "gear")
-                                .font(.system(size: 18, weight: .semibold))
-                                .foregroundColor(.primary)
-                        }
-                    }
-                }
+                )
             }
             .tabItem {
                 Image(systemName: "tag")
@@ -134,12 +130,16 @@ struct ContentView: View {
             SettingsView(viewModel: notesViewModel)
         }
         .sheet(isPresented: $showingAddNote) {
-            AddNoteView { note in
-                notesViewModel.addNote(note)
-                showingAddNote = false
-            } onCancel: {
-                showingAddNote = false
-            }
+            AddNoteView(
+                onSave: { note in
+                    notesViewModel.addNote(note)
+                    showingAddNote = false
+                },
+                onCancel: {
+                    showingAddNote = false
+                },
+                customTags: customTags
+            )
         }
         .sheet(isPresented: $showingAddTag) {
             AddTagView { customTag in
@@ -152,7 +152,7 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showingEditNote) {
             if let noteToEdit = noteToEdit {
-                EditNoteView(viewModel: notesViewModel, note: noteToEdit)
+                EditNoteView(viewModel: notesViewModel, note: noteToEdit, customTags: customTags)
             }
         }
         .alert("删除标签", isPresented: $showingDeleteAlert) {
@@ -190,10 +190,11 @@ struct ContentView: View {
                 FilterChip(
                     title: "全部",
                     icon: "square.grid.2x2",
-                    isSelected: selectedFilter == nil,
+                    isSelected: selectedFilter == nil && selectedCustomTag == nil,
                     action: {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                             selectedFilter = nil
+                            selectedCustomTag = nil
                             HapticManager.shared.playSelection()
                         }
                     },
@@ -208,10 +209,28 @@ struct ContentView: View {
                         action: {
                             withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                                 selectedFilter = selectedFilter == tag ? nil : tag
+                                if selectedFilter != nil {
+                                    selectedCustomTag = nil
+                                }
                                 HapticManager.shared.playSelection()
                             }
                         },
                         color: iOSDesignSystem.Colors.accent200
+                    )
+                }
+                
+                ForEach(customTags, id: \.id) { customTag in
+                    FilterChip(
+                        title: customTag.name,
+                        icon: customTag.icon,
+                        isSelected: isCustomTagSelected(customTag),
+                        action: {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                toggleCustomTagSelection(customTag)
+                                HapticManager.shared.playSelection()
+                            }
+                        },
+                        color: customTag.tagColor
                     )
                 }
             }
@@ -239,7 +258,15 @@ struct ContentView: View {
     }
     
     private func getFilteredNotes() -> [Note] {
-        let notes = notesViewModel.filterNotes(by: selectedFilter)
+        var notes: [Note]
+        
+        if let selectedFilter = selectedFilter {
+            notes = notesViewModel.filterNotes(by: selectedFilter)
+        } else if let selectedCustomTag = selectedCustomTag {
+            notes = notesViewModel.filterNotes(by: selectedCustomTag)
+        } else {
+            notes = notesViewModel.notes
+        }
         
         if searchText.isEmpty {
             return notes
@@ -259,6 +286,19 @@ struct ContentView: View {
         ]
         let activePredefinedTags = predefinedTags.filter { !deletedPredefinedTagIds.contains($0.id) }
         return activePredefinedTags + customTags
+    }
+    
+    private func isCustomTagSelected(_ customTag: CustomTag) -> Bool {
+        return selectedCustomTag?.id == customTag.id
+    }
+    
+    private func toggleCustomTagSelection(_ customTag: CustomTag) {
+        if selectedCustomTag?.id == customTag.id {
+            selectedCustomTag = nil
+        } else {
+            selectedCustomTag = customTag
+            selectedFilter = nil
+        }
     }
     
     private func setupTabBarAppearance() {

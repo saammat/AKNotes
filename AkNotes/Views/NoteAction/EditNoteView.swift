@@ -5,16 +5,20 @@ struct EditNoteView: View {
     @ObservedObject var viewModel: NotesViewModel
     
     let note: Note
+    let customTags: [CustomTag]
     
     @State private var content: String
     @State private var selectedTag: NoteTag
+    @State private var selectedCustomTag: CustomTag?
     @State private var selectedDate: Date
     
-    init(viewModel: NotesViewModel, note: Note) {
+    init(viewModel: NotesViewModel, note: Note, customTags: [CustomTag] = []) {
         self.viewModel = viewModel
         self.note = note
+        self.customTags = customTags
         self._content = State(initialValue: note.content)
         self._selectedTag = State(initialValue: note.tag)
+        self._selectedCustomTag = State(initialValue: note.customTag)
         self._selectedDate = State(initialValue: note.createdAt)
     }
     
@@ -39,6 +43,21 @@ struct EditNoteView: View {
                         }
                     }
                     .pickerStyle(.menu)
+                    
+                    if !customTags.isEmpty {
+                        Picker("自定义标签", selection: $selectedCustomTag) {
+                            Text("无").tag(nil as CustomTag?)
+                            ForEach(customTags, id: \.id) { customTag in
+                                HStack {
+                                    Image(systemName: customTag.icon)
+                                        .foregroundColor(customTag.tagColor)
+                                    Text(customTag.name)
+                                }
+                                .tag(customTag as CustomTag?)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                    }
                 }
                 
                 Section("时间") {
@@ -52,6 +71,7 @@ struct EditNoteView: View {
                         note: Note(
                             content: content,
                             tag: selectedTag,
+                            customTag: selectedCustomTag,
                             createdAt: selectedDate
                         ),
                         onDelete: { _ in },
@@ -86,6 +106,7 @@ struct EditNoteView: View {
             note,
             newContent: content.trimmingCharacters(in: .whitespacesAndNewlines),
             newTag: selectedTag,
+            newCustomTag: selectedCustomTag,
             newDate: selectedDate
         )
         dismiss()

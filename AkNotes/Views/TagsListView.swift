@@ -4,6 +4,7 @@ struct TagsListView: View {
     let onAddTag: () -> Void
     let onDeleteTag: (CustomTag) -> Void
     let allTags: [CustomTag]
+    let notes: [Note]
     @State private var searchText = ""
     
     var filteredTags: [CustomTag] {
@@ -41,6 +42,17 @@ struct TagsListView: View {
         .background(Color.clear)
     }
     
+    private func noteCount(for tag: CustomTag) -> Int {
+        return notes.filter { note in
+            if let customTag = note.customTag {
+                return customTag.id == tag.id
+            } else {
+                // For predefined tags, match by name
+                return note.tag.displayName == tag.name
+            }
+        }.count
+    }
+    
     private func tagCard(for tag: CustomTag) -> some View {
         HStack(spacing: 16) {
             Image(systemName: tag.icon)
@@ -59,7 +71,7 @@ struct TagsListView: View {
                 
                 Spacer()
                 
-                Text("0 个笔记")
+                Text("\(noteCount(for: tag)) 个笔记")
                     .font(.system(.callout, design: .rounded))
                     .foregroundColor(.secondary)
             }

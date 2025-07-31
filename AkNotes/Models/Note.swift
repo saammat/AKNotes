@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-enum NoteTag: String, CaseIterable, Codable {
+enum NoteTag: String, CaseIterable, Codable, Hashable {
     case todo = "todo"
     case idea = "idea"
     case tools = "tools"
@@ -26,7 +26,7 @@ enum NoteTag: String, CaseIterable, Codable {
     }
 }
 
-struct CustomTag: Identifiable, Codable, Equatable {
+struct CustomTag: Identifiable, Codable, Equatable, Hashable {
     let id: UUID
     let name: String
     let icon: String
@@ -48,7 +48,7 @@ struct CustomTag: Identifiable, Codable, Equatable {
     }
 }
 
-struct Note: Identifiable, Codable {
+struct Note: Identifiable, Codable, Hashable {
     let id: UUID
     let content: String
     let tag: NoteTag

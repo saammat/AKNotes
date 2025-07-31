@@ -50,6 +50,28 @@ class NotesViewModel: ObservableObject {
                 id: note.id,
                 content: updatedContent,
                 tag: updatedTag,
+                customTag: note.customTag,
+                createdAt: updatedDate
+            )
+            
+            notes[index] = updatedNote
+            saveNotes()
+            HapticManager.shared.playSuccess()
+        }
+    }
+    
+    func updateNote(_ note: Note, newContent: String?, newTag: NoteTag?, newCustomTag: CustomTag?, newDate: Date?) {
+        if let index = notes.firstIndex(where: { $0.id == note.id }) {
+            let updatedContent = newContent ?? note.content
+            let updatedTag = newTag ?? note.tag
+            let updatedCustomTag = newCustomTag ?? note.customTag
+            let updatedDate = newDate ?? note.createdAt
+            
+            let updatedNote = Note(
+                id: note.id,
+                content: updatedContent,
+                tag: updatedTag,
+                customTag: updatedCustomTag,
                 createdAt: updatedDate
             )
             
@@ -68,6 +90,11 @@ class NotesViewModel: ObservableObject {
     func filterNotes(by tag: NoteTag?) -> [Note] {
         guard let tag = tag else { return notes }
         return notes.filter { $0.tag == tag }
+    }
+    
+    func filterNotes(by customTag: CustomTag?) -> [Note] {
+        guard let customTag = customTag else { return notes }
+        return notes.filter { $0.customTag?.id == customTag.id }
     }
     
     func saveNotes() {

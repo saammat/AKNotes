@@ -3,9 +3,11 @@ import SwiftUI
 struct AddNoteView: View {
     let onSave: (Note) -> Void
     let onCancel: () -> Void
+    let customTags: [CustomTag]
     
     @State private var content = ""
     @State private var selectedTag: NoteTag = .general
+    @State private var selectedCustomTag: CustomTag? = nil
     
     var body: some View {
         NavigationView {
@@ -27,6 +29,21 @@ struct AddNoteView: View {
                         }
                     }
                     .pickerStyle(.menu)
+                    
+                    if !customTags.isEmpty {
+                        Picker("自定义标签", selection: $selectedCustomTag) {
+                            Text("无").tag(nil as CustomTag?)
+                            ForEach(customTags, id: \.id) { customTag in
+                                HStack {
+                                    Image(systemName: customTag.icon)
+                                        .foregroundColor(customTag.tagColor)
+                                    Text(customTag.name)
+                                }
+                                .tag(customTag as CustomTag?)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                    }
                 }
             }
             .navigationTitle("添加笔记")
@@ -43,6 +60,7 @@ struct AddNoteView: View {
                             id: UUID(),
                             content: content,
                             tag: selectedTag,
+                            customTag: selectedCustomTag,
                             createdAt: Date()
                         )
                         onSave(newNote)
