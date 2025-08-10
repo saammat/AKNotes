@@ -32,7 +32,6 @@ struct ContentView: View {
     
     // 自定义的标签列表
     @State private var customTags: [CustomTag] = []
-    @State private var deletedPredefinedTagIds: Set<UUID> = []
     @State private var customTagToDelete: CustomTag?
     
     @State private var showingSettings = false
@@ -62,6 +61,12 @@ struct ContentView: View {
                                     EmptyTimelineView()
                                     Spacer()
                                 }
+                                FloatingAddButton {
+                                    showingAddNote = true
+                                    HapticManager.shared.playSelection()
+                                }
+                                .padding(.trailing, AppSpacing.md)
+                                .padding(.bottom, AppSpacing.xl)
                             } else {
                                 TimelineView(
                                     notes: getFilteredNotes(),
@@ -75,14 +80,14 @@ struct ContentView: View {
                                         HapticManager.shared.playSelection()
                                     }
                                 )
+                                
+                                FloatingAddButton {
+                                    showingAddNote = true
+                                    HapticManager.shared.playSelection()
+                                }
+                                .padding(.trailing, AppSpacing.md)
+                                .padding(.bottom, AppSpacing.xl)
                             }
-                            
-                            FloatingAddButton {
-                                showingAddNote = true
-                                HapticManager.shared.playSelection()
-                            }
-                            .padding(.trailing, AppSpacing.md)
-                            .padding(.bottom, AppSpacing.xl)
                         }
                     }
                 }

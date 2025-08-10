@@ -38,7 +38,6 @@ struct EmptyTimelineView: View {
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
             }
-            .padding(.horizontal, AppSpacing.xl)
             
             Spacer()
             Spacer()
