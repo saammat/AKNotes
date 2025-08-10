@@ -9,23 +9,37 @@ import SwiftUI
 import Combine
 
 struct ContentView: View {
+    // 选择的tab页索引
+    @State private var selectedTab = 0
+    
+    // 笔记列表
     @StateObject private var notesViewModel = NotesViewModel()
+    
+    // 笔记页面选择的过滤按钮
+    // selectedFilter: 固定的过滤按钮
+    // selectedCustomTag: 自定义的过滤按钮
     @State private var selectedFilter: NoteTag? = nil
     @State private var selectedCustomTag: CustomTag? = nil
-    @State private var selectedTab = 0
-    @StateObject private var noteStore = NoteStore()
+    
+    // 笔记页面搜索文本
     @State private var searchText = ""
+    
+    // 标签页面搜索文本
     @State private var searchTag = ""
+    
+    // 待编辑的笔记
     @State private var noteToEdit: Note?
+    
+    // 自定义的标签列表
     @State private var customTags: [CustomTag] = []
     @State private var deletedPredefinedTagIds: Set<UUID> = []
     @State private var customTagToDelete: CustomTag?
-    @State private var showingDeleteAlert = false
     
     @State private var showingSettings = false
     @State private var showingAddNote = false
     @State private var showingAddTag = false
     @State private var showingEditNote = false
+    @State private var showingDeleteAlert = false
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -223,7 +237,7 @@ struct ContentView: View {
                     FilterChip(
                         title: customTag.name,
                         icon: customTag.icon,
-                        isSelected: isCustomTagSelected(customTag),
+                        isSelected: selectedCustomTag?.id == customTag.id,
                         action: {
                             withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                                 toggleCustomTagSelection(customTag)
@@ -321,43 +335,6 @@ struct ContentView: View {
         // Apply to both standard and scroll edge appearances
         UITabBar.appearance().standardAppearance = tabBarAppearance
         UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
-    }
-}
-
-struct SearchBar: View {
-    @Binding var text: String
-    @FocusState private var isFocused: Bool
-    
-    var body: some View {
-        HStack {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(.secondary)
-                .font(.system(size: 16, weight: .medium))
-            
-            TextField("搜索笔记内容...", text: $text)
-                .font(.system(.body, design: .rounded))
-                .focused($isFocused)
-                .textInputAutocapitalization(.none)
-                .autocorrectionDisabled()
-            
-            if !text.isEmpty {
-                Button(action: {
-                    text = ""
-                }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.secondary)
-                        .font(.system(size: 16))
-                }
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
-        .background(Color(.tertiarySystemFill))
-        .cornerRadius(20)
-        .overlay(
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(isFocused ? iOSDesignSystem.Colors.accent200.opacity(0.3) : Color.clear, lineWidth: 1)
-        )
     }
 }
 

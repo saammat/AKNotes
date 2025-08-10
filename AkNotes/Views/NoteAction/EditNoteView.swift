@@ -32,31 +32,68 @@ struct EditNoteView: View {
                 }
                 
                 Section("标签") {
-                    Picker("选择标签", selection: $selectedTag) {
-                        ForEach(NoteTag.allCases, id: \.self) { tag in
-                            HStack {
-                                Image(systemName: tagIcon(for: tag))
-                                    .foregroundColor(tagColor(for: tag))
-                                Text(tag.displayName)
+                    Menu {
+                        // 预定义标签
+                        Section("预定义标签") {
+                            ForEach(NoteTag.allCases, id: \.self) { tag in
+                                Button(action: {
+                                    selectedTag = tag
+                                    selectedCustomTag = nil
+                                }) {
+                                    HStack {
+                                        Image(systemName: tagIcon(for: tag))
+                                            .foregroundColor(tagColor(for: tag))
+                                        Text(tag.displayName)
+                                        Spacer()
+                                        if selectedTag == tag && selectedCustomTag == nil {
+                                            Image(systemName: "checkmark")
+                                                .foregroundColor(.accentColor)
+                                        }
+                                    }
+                                }
                             }
-                            .tag(tag)
                         }
-                    }
-                    .pickerStyle(.menu)
-                    
-                    if !customTags.isEmpty {
-                        Picker("自定义标签", selection: $selectedCustomTag) {
-                            Text("无").tag(nil as CustomTag?)
-                            ForEach(customTags, id: \.id) { customTag in
+                        
+                        // 自定义标签
+                        if !customTags.isEmpty {
+                            Section("自定义标签") {
+                                ForEach(customTags, id: \.id) { customTag in
+                                    Button(action: {
+                                        selectedTag = .general
+                                        selectedCustomTag = customTag
+                                    }) {
+                                        HStack {
+                                            Image(systemName: customTag.icon)
+                                                .foregroundColor(customTag.tagColor)
+                                            Text(customTag.name)
+                                            Spacer()
+                                            if selectedCustomTag?.id == customTag.id {
+                                                Image(systemName: "checkmark")
+                                                    .foregroundColor(.accentColor)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } label: {
+                        HStack {
+                            Text("选择标签")
+                            Spacer()
+                            if let customTag = selectedCustomTag {
                                 HStack {
                                     Image(systemName: customTag.icon)
                                         .foregroundColor(customTag.tagColor)
                                     Text(customTag.name)
                                 }
-                                .tag(customTag as CustomTag?)
+                            } else {
+                                HStack {
+                                    Image(systemName: tagIcon(for: selectedTag))
+                                        .foregroundColor(tagColor(for: selectedTag))
+                                    Text(selectedTag.displayName)
+                                }
                             }
                         }
-                        .pickerStyle(.menu)
                     }
                 }
                 
