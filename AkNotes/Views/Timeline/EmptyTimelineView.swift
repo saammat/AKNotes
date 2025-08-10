@@ -42,5 +42,7 @@ struct EmptyTimelineView: View {
             Spacer()
             Spacer()
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.bottom, AppSpacing.xl)
     }
 }

@@ -57,16 +57,7 @@ struct ContentView: View {
                         }
                         ZStack(alignment: .bottomTrailing) {
                             if getFilteredNotes().isEmpty {
-                                VStack {
-                                    EmptyTimelineView()
-                                    Spacer()
-                                }
-                                FloatingAddButton {
-                                    showingAddNote = true
-                                    HapticManager.shared.playSelection()
-                                }
-                                .padding(.trailing, AppSpacing.md)
-                                .padding(.bottom, AppSpacing.xl)
+                                EmptyTimelineView()
                             } else {
                                 TimelineView(
                                     notes: getFilteredNotes(),
@@ -80,14 +71,14 @@ struct ContentView: View {
                                         HapticManager.shared.playSelection()
                                     }
                                 )
-                                
-                                FloatingAddButton {
-                                    showingAddNote = true
-                                    HapticManager.shared.playSelection()
-                                }
-                                .padding(.trailing, AppSpacing.md)
-                                .padding(.bottom, AppSpacing.xl)
                             }
+                            
+                            FloatingAddButton {
+                                showingAddNote = true
+                                HapticManager.shared.playSelection()
+                            }
+                            .padding(.trailing, AppSpacing.md)
+                            .padding(.bottom, AppSpacing.xl)
                         }
                     }
                 }
