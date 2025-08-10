@@ -81,11 +81,15 @@ struct TagsListView: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 16)
         .contextMenu {
-            Button(role: .destructive) {
-                onDeleteTag(tag)
-                HapticManager.shared.playSuccess()
-            } label: {
-                Label("删除", systemImage: "trash")
+            // 预定义标签不允许删除
+            let predefinedTagNames = NoteTag.allCases.map { $0.displayName }
+            if !predefinedTagNames.contains(tag.name) {
+                Button(role: .destructive) {
+                    onDeleteTag(tag)
+                    HapticManager.shared.playSuccess()
+                } label: {
+                    Label("删除", systemImage: "trash")
+                }
             }
         }
     }

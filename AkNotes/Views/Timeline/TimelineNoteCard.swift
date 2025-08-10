@@ -14,7 +14,7 @@ struct TimelineNoteCard: View {
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(tagColor)
                     
-                    Text(note.tag.displayName)
+                    Text(note.displayTagName)
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(tagColor)
                 }

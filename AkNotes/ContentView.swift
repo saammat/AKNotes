@@ -175,13 +175,17 @@ struct ContentView: View {
             }
             Button("删除", role: .destructive) {
                 if let customTagToDelete = customTagToDelete {
+                    // 检查是否为预定义标签，预定义标签不允许删除
+                    let predefinedTagNames = NoteTag.allCases.map { $0.displayName }
+                    if predefinedTagNames.contains(customTagToDelete.name) {
+                        // 预定义标签不允许删除
+                        HapticManager.shared.playError()
+                        return
+                    }
+                    
                     // 首先尝试从自定义标签中删除
                     if let index = customTags.firstIndex(where: { $0.id == customTagToDelete.id }) {
                         customTags.remove(at: index)
-                        HapticManager.shared.playSuccess()
-                    } else {
-                        // 如果不是自定义标签，则添加到已删除的预定义标签集合中
-                        deletedPredefinedTagIds.insert(customTagToDelete.id)
                         HapticManager.shared.playSuccess()
                     }
                 }
@@ -296,10 +300,9 @@ struct ContentView: View {
             CustomTag(id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!, name: "待办", icon: "checkmark.circle.fill", color: "#FF6B6B"),
             CustomTag(id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!, name: "想法", icon: "lightbulb.fill", color: "#4ECDC4"),
             CustomTag(id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!, name: "工具", icon: "wrench.fill", color: "#667eea"),
-            CustomTag(id: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!, name: "一般", icon: "note", color: "#8E8E93")
+            CustomTag(id: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!, name: "其他", icon: "note", color: "#8E8E93")
         ]
-        let activePredefinedTags = predefinedTags.filter { !deletedPredefinedTagIds.contains($0.id) }
-        return activePredefinedTags + customTags
+        return predefinedTags + customTags
     }
     
     private func isCustomTagSelected(_ customTag: CustomTag) -> Bool {
