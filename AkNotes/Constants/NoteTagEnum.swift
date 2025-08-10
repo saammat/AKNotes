@@ -23,7 +23,7 @@ enum NoteTag: String, CaseIterable, Codable, Hashable {
     
     var color: Color {
         switch self {
-        case .todo: return .orange
+        case .todo: return .red
         case .idea: return .blue
         case .tools: return .green
         case .general: return .gray
