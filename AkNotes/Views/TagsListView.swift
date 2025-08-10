@@ -84,11 +84,14 @@ struct TagsListView: View {
             // 预定义标签不允许删除
             let predefinedTagNames = NoteTag.allCases.map { $0.displayName }
             if !predefinedTagNames.contains(tag.name) {
-                Button(role: .destructive) {
-                    onDeleteTag(tag)
-                    HapticManager.shared.playSuccess()
-                } label: {
-                    Label("删除", systemImage: "trash")
+                // 检查是否有关联的笔记
+                if noteCount(for: tag) == 0 {
+                    Button(role: .destructive) {
+                        onDeleteTag(tag)
+                        HapticManager.shared.playSuccess()
+                    } label: {
+                        Label("删除", systemImage: "trash")
+                    }
                 }
             }
         }

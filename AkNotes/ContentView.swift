@@ -40,6 +40,7 @@ struct ContentView: View {
     @State private var showingAddTag = false
     @State private var showingEditNote = false
     @State private var showingDeleteAlert = false
+    @State private var showingHasNotesAlert = false
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -183,6 +184,14 @@ struct ContentView: View {
                         return
                     }
                     
+                    // 检查是否有关联的笔记
+                    if hasAssociatedNotes(customTagToDelete) {
+                        // 有关联笔记，显示提示
+                        showingDeleteAlert = false
+                        showingHasNotesAlert = true
+                        return
+                    }
+                    
                     // 首先尝试从自定义标签中删除
                     if let index = customTags.firstIndex(where: { $0.id == customTagToDelete.id }) {
                         customTags.remove(at: index)
@@ -194,6 +203,15 @@ struct ContentView: View {
         } message: {
             if let customTagToDelete = customTagToDelete {
                 Text("确定要删除标签\"\(customTagToDelete.name)\"吗？此操作不可撤销。")
+            }
+        }
+        .alert("无法删除", isPresented: $showingHasNotesAlert) {
+            Button("确定", role: .cancel) {
+                customTagToDelete = nil
+            }
+        } message: {
+            if let customTagToDelete = customTagToDelete {
+                Text("标签\"\(customTagToDelete.name)\"已关联笔记，无法删除。请先删除或修改使用该标签的笔记。")
             }
         }
     }
@@ -303,6 +321,18 @@ struct ContentView: View {
             CustomTag(id: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!, name: "其他", icon: "note", color: "#8E8E93")
         ]
         return predefinedTags + customTags
+    }
+    
+    private func hasAssociatedNotes(_ tag: CustomTag) -> Bool {
+        // 检查是否有笔记使用了这个标签
+        return notesViewModel.notes.contains { note in
+            // 检查自定义标签
+            if let customTag = note.customTag {
+                return customTag.id == tag.id
+            }
+            // 检查预定义标签（通过名称匹配）
+            return note.tag.displayName == tag.name
+        }
     }
     
     private func isCustomTagSelected(_ customTag: CustomTag) -> Bool {
