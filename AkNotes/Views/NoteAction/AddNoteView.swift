@@ -33,7 +33,7 @@ struct AddNoteView: View {
                                         Spacer()
                                         if selectedTag == tag && selectedCustomTag == nil {
                                             Image(systemName: "checkmark")
-                                                .foregroundColor(.accentColor)
+                                                .foregroundColor(iOSDesignSystem.Colors.primary200)
                                         }
                                     }
                                 }
@@ -55,7 +55,7 @@ struct AddNoteView: View {
                                             Spacer()
                                             if selectedCustomTag?.id == customTag.id {
                                                 Image(systemName: "checkmark")
-                                                    .foregroundColor(.accentColor)
+                                                    .foregroundColor(iOSDesignSystem.Colors.primary200)
                                             }
                                         }
                                     }
@@ -65,18 +65,21 @@ struct AddNoteView: View {
                     } label: {
                         HStack {
                             Text("选择标签")
+                                .foregroundColor(iOSDesignSystem.Colors.primary200)
                             Spacer()
                             if let customTag = selectedCustomTag {
                                 HStack {
                                     Image(systemName: customTag.icon)
                                         .foregroundColor(customTag.tagColor)
                                     Text(customTag.name)
+                                        .foregroundColor(iOSDesignSystem.Colors.primary200)
                                 }
                             } else {
                                 HStack {
                                     Image(systemName: tagIcon(for: selectedTag))
                                         .foregroundColor(tagColor(for: selectedTag))
                                     Text(selectedTag.displayName)
+                                        .foregroundColor(iOSDesignSystem.Colors.primary200)
                                 }
                             }
                         }
@@ -90,6 +93,7 @@ struct AddNoteView: View {
                     Button("取消") {
                         onCancel()
                     }
+                    .foregroundColor(iOSDesignSystem.Colors.primary200)
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("保存") {
@@ -103,6 +107,7 @@ struct AddNoteView: View {
                         onSave(newNote)
                     }
                     .disabled(content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .foregroundColor(content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? .gray : iOSDesignSystem.Colors.primary200)
                 }
             }
         }

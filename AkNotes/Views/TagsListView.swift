@@ -184,6 +184,7 @@ struct AddTagView: View {
                     Button("取消") {
                         onCancel()
                     }
+                    .foregroundColor(iOSDesignSystem.Colors.primary200)
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("保存") {
@@ -191,6 +192,7 @@ struct AddTagView: View {
                         onSave(customTag)
                     }
                     .disabled(tagName.isEmpty)
+                    .foregroundColor(tagName.isEmpty ? .gray : iOSDesignSystem.Colors.primary200)
                 }
             }
         }

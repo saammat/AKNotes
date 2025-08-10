@@ -47,7 +47,7 @@ struct EditNoteView: View {
                                         Spacer()
                                         if selectedTag == tag && selectedCustomTag == nil {
                                             Image(systemName: "checkmark")
-                                                .foregroundColor(.accentColor)
+                                                .foregroundColor(iOSDesignSystem.Colors.primary200)
                                         }
                                     }
                                 }
@@ -69,7 +69,7 @@ struct EditNoteView: View {
                                             Spacer()
                                             if selectedCustomTag?.id == customTag.id {
                                                 Image(systemName: "checkmark")
-                                                    .foregroundColor(.accentColor)
+                                                    .foregroundColor(iOSDesignSystem.Colors.primary200)
                                             }
                                         }
                                     }
@@ -79,18 +79,21 @@ struct EditNoteView: View {
                     } label: {
                         HStack {
                             Text("选择标签")
+                                .foregroundColor(iOSDesignSystem.Colors.primary200)
                             Spacer()
                             if let customTag = selectedCustomTag {
                                 HStack {
                                     Image(systemName: customTag.icon)
                                         .foregroundColor(customTag.tagColor)
                                     Text(customTag.name)
+                                        .foregroundColor(iOSDesignSystem.Colors.primary200)
                                 }
                             } else {
                                 HStack {
                                     Image(systemName: tagIcon(for: selectedTag))
                                         .foregroundColor(tagColor(for: selectedTag))
                                     Text(selectedTag.displayName)
+                                        .foregroundColor(iOSDesignSystem.Colors.primary200)
                                 }
                             }
                         }
