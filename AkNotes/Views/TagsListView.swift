@@ -5,6 +5,7 @@ struct TagsListView: View {
     let onDeleteTag: (CustomTag) -> Void
     let allTags: [CustomTag]
     let notes: [Note]
+    let customTags: [CustomTag]
     @State private var searchText = ""
     
     var filteredTags: [CustomTag] {
@@ -81,9 +82,8 @@ struct TagsListView: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 16)
         .contextMenu {
-            // 预定义标签不允许删除
-            let predefinedTagNames = NoteTag.allCases.map { $0.displayName }
-            if !predefinedTagNames.contains(tag.name) {
+            // 检查是否为自定义标签，只有自定义标签可以删除
+            if customTags.contains(where: { $0.id == tag.id }) {
                 // 检查是否有关联的笔记
                 if noteCount(for: tag) == 0 {
                     Button(role: .destructive) {

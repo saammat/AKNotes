@@ -12,28 +12,28 @@ struct ContentView: View {
     // 选择的tab页索引
     @State private var selectedTab = 0
     
-    // 笔记列表
+    // MARK: - 笔记页面数据
+    // 笔记列表数据
     @StateObject private var notesViewModel = NotesViewModel()
-    
-    // 笔记页面选择的过滤按钮
-    // selectedFilter: 固定的过滤按钮
-    // selectedCustomTag: 自定义的过滤按钮
+    // 笔记页面选择的过滤按钮：selectedFilter - 固定的过滤按钮；selectedCustomTag - 自定义的过滤按钮
     @State private var selectedFilter: NoteTag? = nil
     @State private var selectedCustomTag: CustomTag? = nil
-    
     // 笔记页面搜索文本
     @State private var searchText = ""
-    
-    // 标签页面搜索文本
-    @State private var searchTag = ""
-    
     // 待编辑的笔记
     @State private var noteToEdit: Note?
     
-    // 自定义的标签列表
-    @State private var customTags: [CustomTag] = []
+    
+    // MARK: - 标签页面数据
+    // 标签列表数据
+    @StateObject private var tagsViewModel = TagsViewModel()
+    // 标签页面搜索文本
+    @State private var searchTag = ""
+    // 待删除的自定义标签
     @State private var customTagToDelete: CustomTag?
     
+    
+    // MARK: - 状态数据
     @State private var showingSettings = false
     @State private var showingAddNote = false
     @State private var showingAddTag = false
@@ -41,6 +41,8 @@ struct ContentView: View {
     @State private var showingDeleteAlert = false
     @State private var showingHasNotesAlert = false
     
+    
+    // MARK: - UI页面
     var body: some View {
         TabView(selection: $selectedTab) {
             NavigationView {
@@ -114,7 +116,8 @@ struct ContentView: View {
                             showingDeleteAlert = true
                         },
                         allTags: getAllTags(),
-                        notes: notesViewModel.notes
+                        notes: notesViewModel.notes,
+                        customTags: tagsViewModel.customTags
                     )
                 }
                 .navigationBarTitleDisplayMode(.inline)
@@ -149,12 +152,12 @@ struct ContentView: View {
                 onCancel: {
                     showingAddNote = false
                 },
-                customTags: customTags
+                customTags: tagsViewModel.customTags
             )
         }
         .sheet(isPresented: $showingAddTag) {
             AddTagView { customTag in
-                customTags.append(customTag)
+                tagsViewModel.addTag(customTag)
                 showingAddTag = false
                 HapticManager.shared.playSuccess()
             } onCancel: {
@@ -163,7 +166,7 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showingEditNote) {
             if let noteToEdit = noteToEdit {
-                EditNoteView(viewModel: notesViewModel, note: noteToEdit, customTags: customTags)
+                EditNoteView(viewModel: notesViewModel, note: noteToEdit, customTags: tagsViewModel.customTags)
             }
         }
         .alert("删除标签", isPresented: $showingDeleteAlert) {
@@ -188,11 +191,9 @@ struct ContentView: View {
                         return
                     }
                     
-                    // 首先尝试从自定义标签中删除
-                    if let index = customTags.firstIndex(where: { $0.id == customTagToDelete.id }) {
-                        customTags.remove(at: index)
-                        HapticManager.shared.playSuccess()
-                    }
+                    // 从自定义标签中删除
+                    tagsViewModel.deleteTag(customTagToDelete)
+                    HapticManager.shared.playSuccess()
                 }
                 customTagToDelete = nil
             }
@@ -251,7 +252,7 @@ struct ContentView: View {
                     )
                 }
                 
-                ForEach(customTags, id: \.id) { customTag in
+                ForEach(tagsViewModel.customTags, id: \.id) { customTag in
                     FilterChip(
                         title: customTag.name,
                         icon: customTag.icon,
@@ -316,7 +317,7 @@ struct ContentView: View {
             CustomTag(id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!, name: "工具", icon: "wrench.fill", color: "#667eea"),
             CustomTag(id: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!, name: "其他", icon: "note", color: "#8E8E93")
         ]
-        return predefinedTags + customTags
+        return predefinedTags + tagsViewModel.customTags
     }
     
     private func hasAssociatedNotes(_ tag: CustomTag) -> Bool {
@@ -366,35 +367,6 @@ struct ContentView: View {
         UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
     }
 }
-
-struct FilterChip: View {
-    let title: String
-    let icon: String
-    let isSelected: Bool
-    let action: () -> Void
-    let color: Color
-    
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 6) {
-                Image(systemName: icon)
-                    .font(.system(size: 14, weight: .semibold))
-                
-                Text(title)
-                    .font(.system(.callout, weight: .medium))
-            }
-            .foregroundColor(isSelected ? .white : .primary)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(isSelected ? AnyShapeStyle(color) : AnyShapeStyle(Color(.tertiarySystemFill)))
-            )
-        }
-        .buttonStyle(.plain)
-    }
-}
-
 
 #Preview {
     ContentView()
